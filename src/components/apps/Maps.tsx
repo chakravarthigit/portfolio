@@ -1,4 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+// Google Maps type definitions
+declare global {
+  var google: any;
+}
+
+declare global {
+  interface Window {
+    initMap: () => void;
+  }
+}
 
 interface Location {
   id: string;
@@ -24,45 +35,59 @@ const Maps = () => {
   const [activeTab, setActiveTab] = useState<"map" | "transit" | "satellite">("map");
   const [showDirections, setShowDirections] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Sample locations
+  // Vijayawada coordinates
+  const defaultLocation = { lat: 16.5062, lng: 80.6480 };
+  
+  // Sample locations around Vijayawada
   const locations: Location[] = [
     {
       id: "1",
-      name: "Apple Park",
-      address: "One Apple Park Way, Cupertino, CA 95014",
-      coordinates: [37.3346, -122.0090],
-      category: "business",
+      name: "Kanaka Durga Temple",
+      address: "Indrakeeladri, Vijayawada, Andhra Pradesh 520010",
+      coordinates: [16.5176, 80.6217],
+      category: "religious",
       favorite: true
     },
     {
-      id: "2",
-      name: "Golden Gate Bridge",
-      address: "Golden Gate Bridge, San Francisco, CA 94129",
-      coordinates: [37.8199, -122.4783],
-      category: "landmark",
+      id:"2",
+      name:"Home",
+      address:"Nekkalam Gollagudem, Vijayawada, Andhra Pradesh 521212",
+      coordinates: [16.3832, 80.4333],
+      category: "home",
       favorite: true
     },
     {
       id: "3",
-      name: "Fisherman's Wharf",
-      address: "Beach Street & The Embarcadero, San Francisco, CA 94133",
-      coordinates: [37.8080, -122.4177],
-      category: "tourist"
+      name: "Prakasam Barrage",
+      address: "Prakasam Barrage, Vijayawada, Andhra Pradesh 520004",
+      coordinates: [16.5062, 80.6217],
+      category: "landmark",
+      favorite: true
     },
     {
       id: "4",
-      name: "Stanford University",
-      address: "450 Serra Mall, Stanford, CA 94305",
-      coordinates: [37.4275, -122.1697],
-      category: "education"
+      name: "Undavalli Caves",
+      address: "Undavalli, Guntur, Andhra Pradesh 522501",
+      coordinates: [16.4833, 80.5667],
+      category: "tourist"
     },
     {
       id: "5",
-      name: "San Francisco International Airport",
-      address: "San Francisco, CA 94128",
-      coordinates: [37.6213, -122.3790],
+      name: "Vijayawada Railway Station",
+      address: "Railway Station Rd, Patamatalanka, Vijayawada, Andhra Pradesh 520003",
+      coordinates: [16.5193, 80.6158],
       category: "transportation"
+    },
+    {
+      id: "6",
+      name: "Bhavani Island",
+      address: "Krishna River, Vijayawada, Andhra Pradesh 520007",
+      coordinates: [16.5400, 80.6100],
+      category: "tourist"
     }
   ];
   
@@ -97,13 +122,154 @@ const Maps = () => {
     }
   ];
   
+  // Initialize Google Maps
+  useEffect(() => {
+    const loadGoogleMaps = () => {
+      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+      if (!apiKey) {
+        console.error('Google Maps API key not found in environment variables');
+        setIsLoading(false);
+        return;
+      }
+
+      if (window.google) {
+        initializeMap();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+      script.async = true;
+      script.defer = true;
+      
+      window.initMap = initializeMap;
+      document.head.appendChild(script);
+    };
+
+    const initializeMap = () => {
+      if (!mapRef.current) return;
+
+      const mapOptions = {
+        center: defaultLocation,
+        zoom: 13,
+        mapTypeId: activeTab === 'satellite' ? 'satellite' : 'roadmap',
+        styles: activeTab === 'map' ? [
+          {
+            featureType: 'all',
+            elementType: 'geometry.fill',
+            stylers: [{ color: '#f5f5f5' }]
+          },
+          {
+            featureType: 'water',
+            elementType: 'geometry',
+            stylers: [{ color: '#c9c9c9' }]
+          }
+        ] : undefined
+      };
+
+      const newMap = new window.google.maps.Map(mapRef.current, mapOptions);
+      setMap(newMap);
+      setIsLoading(false);
+
+      // Add markers for locations
+      locations.forEach(location => {
+        const marker = new window.google.maps.Marker({
+          position: { lat: location.coordinates[0], lng: location.coordinates[1] },
+          map: newMap,
+          title: location.name,
+          icon: location.favorite ? {
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#FF6B6B"/>
+                <circle cx="12" cy="9" r="2.5" fill="white"/>
+              </svg>
+            `),
+            scaledSize: new window.google.maps.Size(24, 24)
+          } : undefined
+        });
+
+        marker.addListener('click', () => {
+          setSelectedLocation(location.id);
+        });
+      });
+    };
+
+    loadGoogleMaps();
+  }, [activeTab]);
+
   const getSelectedLocation = () => {
     return locations.find(location => location.id === selectedLocation);
   };
   
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Search for:", searchQuery);
+    if (!map || !searchQuery.trim()) return;
+    
+    const service = new window.google.maps.places.PlacesService(map);
+    const request = {
+      query: searchQuery,
+      location: defaultLocation,
+      radius: 50000
+    };
+    
+    service.textSearch(request, (results: any[], status: any) => {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK && results[0]) {
+        map.setCenter(results[0].geometry.location);
+        map.setZoom(15);
+        
+        new window.google.maps.Marker({
+          position: results[0].geometry.location,
+          map: map,
+          title: results[0].name
+        });
+      }
+    });
+  };
+  
+  const handleMapTypeChange = (type: 'roadmap' | 'satellite' | 'hybrid' | 'terrain') => {
+    if (map) {
+      map.setMapTypeId(type);
+    }
+  };
+  
+  const zoomIn = () => {
+    if (map) {
+      map.setZoom(map.getZoom() + 1);
+    }
+  };
+  
+  const zoomOut = () => {
+    if (map) {
+      map.setZoom(map.getZoom() - 1);
+    }
+  };
+  
+  const goToCurrentLocation = () => {
+    if (navigator.geolocation && map) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        map.setCenter(pos);
+        map.setZoom(15);
+        
+        new window.google.maps.Marker({
+          position: pos,
+          map: map,
+          title: 'Your Location',
+          icon: {
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="8" fill="#4285F4" stroke="white" stroke-width="2"/>
+                <circle cx="10" cy="10" r="3" fill="white"/>
+              </svg>
+            `),
+            scaledSize: new window.google.maps.Size(20, 20)
+          }
+        });
+      });
+    }
   };
   
   const toggleDirections = () => {
@@ -430,16 +596,15 @@ const Maps = () => {
         
         {/* Map area */}
         <div className="map-area flex-1 bg-gray-100 dark:bg-gray-800 relative">
-          {/* This would be replaced with an actual map library in a real implementation */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div className="i-heroicons-map text-9xl text-gray-300 dark:text-gray-700 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Map view would be displayed here</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                In a real implementation, this would use MapKit JS or another mapping library
-              </p>
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+                <p className="text-gray-500 dark:text-gray-400">Loading Google Maps...</p>
+              </div>
             </div>
-          </div>
+          )}
+          <div ref={mapRef} className="w-full h-full" style={{ minHeight: '400px' }} />
           
           {/* Map controls */}
           <div className="absolute bottom-4 right-4 flex flex-col space-y-2">
