@@ -23,7 +23,7 @@ Contact me by:
 
 ## Resume
 
-- Normal version: [English](https://zxh.me/files/cv/en.pdf) 
+- Normal version: [English]
 
 
 - Interesting version:https://portfolio-website-gilt-gamma.vercel.app/
