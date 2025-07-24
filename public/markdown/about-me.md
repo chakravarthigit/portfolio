@@ -23,7 +23,7 @@ Contact me by:
 
 ## Resume
 
-- Normal version: [English]
+- Normal version: [English](https://drive.google.com/file/d/1HY7Q7RBXxYo9-u94hvugTbWh3SL5s9zp/view?usp=sharing)
 
 
 - Interesting version:https://portfolio-website-gilt-gamma.vercel.app/
