@@ -43,12 +43,20 @@ const bear: BearData[] = [
         link: "https://www.flavorsync.xyz"
       },
       {
-        id: "FlavorSync-Landingpage",
-        title: "Landing Page",
-        file: "markdown/flavorsycn-landigpage.md",
-        icon: "i-ri:gamepad-line",
-        excerpt: "Landing page for FlavorSync",
-        link: "https://www.flavorsync.xyz"
+        id: "Snix",
+        title: "Snix",
+        file: "markdown/snix.md", 
+        icon: "i-fa-brands:vuejs",
+        excerpt: "Snix Crytpo App.",
+        link: "https://www.snix.fun/"
+      },
+      {
+        id: "loan mate",
+        title: "Loan Mate",
+        file: "markdown/loanmate.md",
+        icon: "i-gg:format-text",
+        excerpt: "LoanMate AI – Smart loan approval engine.",
+        link: "https://huggingface.co/spaces/Chakri5658/loanmate"
       },
       {
         id: "PromptWizard",
@@ -83,12 +91,12 @@ const bear: BearData[] = [
         link: "https://www.lawcara.site/"
       },
       {
-        id: "loan mate",
-        title: "Loan Mate",
-        file: "markdown/loanmate.md",
-        icon: "i-gg:format-text",
-        excerpt: "LoanMate AI – Smart loan approval engine.",
-        link: "https://huggingface.co/spaces/Chakri5658/loanmate"
+        id: "FlavorSync-Landingpage",
+        title: "Landing Page",
+        file: "markdown/flavorsycn-landigpage.md",
+        icon: "i-ri:gamepad-line",
+        excerpt: "Landing page for FlavorSync",
+        link: "https://www.flavorsync.xyz"
       },
       {
         id: "TiltX",

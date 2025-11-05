@@ -44,10 +44,10 @@ const launchpadApps: LaunchpadData[] = [
     link: "https://www.promptwizard.fun/"
   },
   {
-    id: "resume",
-    title: "Résumé",
-    img: "img/icons/launchpad/resume.png",
-    link: "https://resume.zxh.io/"
+    id: "Snix",
+    title: "Snix",
+    img: "img/icons/launchpad/bitcoin.png",
+    link: "https://www.snix.fun/"
   },
 ];
 

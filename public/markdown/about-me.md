@@ -15,15 +15,15 @@ I'm also learning full-stack development and actively building mobile and web-ba
 
 Contact me by:
 
-- Email: [chakravarthiguduru@gmail.com](mailto:chakravarthiguduru@gmail.com)
+- Email: [chakravarthi.dev16@gmail.com](mailto:chakravarthi.dev16@gmail.com)
 - Github: [@chakravrthigit](https://github.com/chakravarthigit)
-- Linkedin: [chakravarthi-guduru](https://www.linkedin.com/in/chakravarthi-guduru-904802255/)
+- Linkedin: [chakravarthi-guduru](https://www.linkedin.com/in/chakravarthi-guduru/)
 - Netflix  Website: [chakravarthi-guduru](https://portfolio-website-gilt-gamma.vercel.app/)
 
 
 ## Resume
 
-- Normal version: [English](https://zxh.me/files/cv/en.pdf) 
+- Normal version: [English](https://drive.google.com/file/d/1RjhKljh4_jpDYJU6k3yZcFKvl7LIH8vB/view?usp=sharing) 
 
 
 - Interesting version:https://portfolio-website-gilt-gamma.vercel.app/

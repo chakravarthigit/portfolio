@@ -5,10 +5,10 @@ declare global {
   var google: any;
 }
 
+// Remove redeclaration of Window interface to avoid conflicts
 declare global {
-  interface Window {
-    initMap: () => void;
-  }
+  // Extend the Window interface only if needed, or just declare the property directly
+  var initMap: () => void;
 }
 
 interface Location {
@@ -36,7 +36,7 @@ const Maps = () => {
   const [showDirections, setShowDirections] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [map, setMap] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   
   // Vijayawada coordinates
